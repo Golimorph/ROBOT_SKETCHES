@@ -36,33 +36,33 @@ arm = Arm(ax)
 arm.draw()
 
 
-def updateTheta(val):
-        arm.m_theta = val*np.pi/180
-        arm.clear()
-        arm.draw()
-
 def updateA(val):
-        arm.m_a = val*np.pi/180
+        arm.a = val*np.pi/180
         arm.clear()
         arm.draw()
 
 def updateB(val):
-        arm.m_b = val*np.pi/180
+        arm.b = val*np.pi/180
         arm.clear()
         arm.draw()
 
-def updatePsi(val):
-        arm.m_psi = val*np.pi/180
+def updateC(val):
+        arm.c = val*np.pi/180
         arm.clear()
         arm.draw()
 
-def updateOmega(val):
-        arm.m_omega = val*np.pi/180
+def updateD(val):
+        arm.d = val*np.pi/180
         arm.clear()
         arm.draw()
 
-def updateGamma(val):
-        arm.m_gamma = val*np.pi/180
+def updateE(val):
+        arm.e = val*np.pi/180
+        arm.clear()
+        arm.draw()
+
+def updateF(val):
+        arm.f = val*np.pi/180
         arm.clear()
         arm.draw()
 
@@ -71,28 +71,27 @@ def main():
     
 
      # Create sliders
-    ax_theta    = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_a        = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_b        = plt.axes([0.1 , 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_psi      = plt.axes([0.55, 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_omega    = plt.axes([0.1 , 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_gamma    = plt.axes([0.55, 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_a = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_b = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_c = plt.axes([0.1 , 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_d = plt.axes([0.55, 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_e = plt.axes([0.1 , 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_f = plt.axes([0.55, 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
 
-    s_theta = Slider(ax_theta, 'theta'  , -180, 180, valinit=0)
-    s_a     = Slider(ax_a, 'a'          , -180, 180, valinit=-60)
-    s_b     = Slider(ax_b, 'b'          , -180, 180, valinit=60)
-    s_psi   = Slider(ax_psi, 'psi'      , -180, 180, valinit=0)
-    s_omega = Slider(ax_omega, 'omega'  , -180, 180, valinit=0)
-    s_gamma = Slider(ax_gamma, 'gamma'  , -180, 180, valinit=0)
+    s_a = Slider(ax_a, 'a', -180, 180, valinit=0)
+    s_b = Slider(ax_b, 'b', -180, 180, valinit=-60)
+    s_c = Slider(ax_c, 'c', -180, 180, valinit=60)
+    s_d = Slider(ax_d, 'd', -180, 180, valinit=0)
+    s_e = Slider(ax_e, 'e', -180, 180, valinit=0)
+    s_f = Slider(ax_f, 'f', -180, 180, valinit=0)
 
-    s_theta.on_changed(updateTheta)
     s_a.on_changed(updateA)
     s_b.on_changed(updateB)
-    s_psi.on_changed(updatePsi)
-    s_omega.on_changed(updateOmega)
-    s_gamma.on_changed(updateGamma)
+    s_c.on_changed(updateC)
+    s_d.on_changed(updateD)
+    s_e.on_changed(updateE)
+    s_f.on_changed(updateF)
  
-   
     plt.show()
 
 
