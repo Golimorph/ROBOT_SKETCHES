@@ -4,7 +4,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import math
 from matplotlib.widgets import Slider, TextBox
 from arm import Arm
-
+import threading
+import time
 
 
 
@@ -66,10 +67,7 @@ def updateF(val):
         arm.clear()
         arm.draw()
 
-
-def main():
-    
-
+def setUpPlot():
      # Create sliders
     ax_a = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
     ax_b = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
@@ -93,6 +91,39 @@ def main():
     s_f.on_changed(updateF)
  
     plt.show()
+
+
+
+
+
+
+def solveInverseKinematics():
+    for i in range(1,3000):
+        arm.getEndEffectorCoordinates(0,0,0,0,0,0)
+
+
+def main():
+    
+    #x = threading.Thread(target=solveInverseKinematics)
+    #x.start()
+
+    start_time = time.time()  # Record the start time
+    solveInverseKinematics()
+    end_time = time.time()    # Record the end time
+
+    elapsed_time = end_time - start_time  # Calculate the elapsed time
+    print(f"Function call took {elapsed_time:.6f} seconds")
+
+
+
+
+    
+
+    #setUpPlot()
+
+    
+
+    
 
 
 
