@@ -3,29 +3,42 @@
 
 #include <vector>
 
+#define A1  40.86
+#define A2  44.83
+#define B  123.0
+#define C1  17.5
+#define C2  131.34
+#define D1  20 //need to measure
+#define D2  20 //need to measure
+#define E1  20 //need to measure
+#define E2  10 //need to measure
+#define F1  10 //need to measure
+#define F2  10 //need to measure
 
 #define epsilon 1e-6
-#define max_iterations 10000
+#define max_iterations 1000
 
-class InverseKinematics {
+class InverseKinematics 
+{
 public:
     InverseKinematics();
-    std::vector<double> solve(const std::vector<double>& initial_guess);
+    std::vector<double> solve(const std::vector<double>& desiredValue);
 
 private:
 
     std::vector<double> function(const std::vector<double>& vars);
     std::vector<std::vector<double> > jacobian(const std::vector<double>& vars);
-    void compute_functions(const std::vector<double>& vars, std::vector<double>& f);
+    void compute_functions(const std::vector<double>& vars, std::vector<double>& funcs);
     void compute_jacobian(const std::vector<double>& vars, std::vector<std::vector<double> >& J);
-    std::vector<double> solve_system(const std::vector<std::vector<double> >& J, const std::vector<double>& f);
+    std::vector<double> solve_system(const std::vector<std::vector<double> >& J, const std::vector<double>& funcs);
 
-    double f0(double v0, double v1, double v2, double v3, double v4, double v5);
-    double f1(double v0, double v1, double v2, double v3, double v4, double v5);
-    double f2(double v0, double v1, double v2, double v3, double v4, double v5);
-    double f3(double v0, double v1, double v2, double v3, double v4, double v5);
-    double f4(double v0, double v1, double v2, double v3, double v4, double v5);
-    double f5(double v0, double v1, double v2, double v3, double v4, double v5);
+    std::vector<double> desiredValue;
+    std::vector<double> lastSolution;
+
+    
+
 };
+
+
 
 #endif // INVERSE_KINEMATICS_H

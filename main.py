@@ -8,6 +8,8 @@ import threading
 import time
 from scipy.optimize import least_squares
 from scipy.optimize import root
+import sys
+import subprocess
 
 def createPlot():
     fig = plt.figure()
@@ -33,29 +35,52 @@ def system_of_equations(vars):
 
 def solveInverseKinematics():
     
-    initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
-    solution = root(system_of_equations, initial_guess, method='hybr')
+    if(0):
+        initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
+        solution = root(system_of_equations, initial_guess, method='hybr')
+        arm.a = solution.x[0]
+        arm.b = solution.x[1]
+        arm.c = solution.x[2]
+        arm.d = solution.x[3]
+        arm.e = solution.x[4]
+        arm.f = solution.x[5]
+    if(1):
+        arguments = [str(arm.x), str(arm.y), str(arm.z), str(arm.alpha), str(arm.beta), str(arm.gamma)]
 
-    arm.a = solution.x[0]
-    arm.b = solution.x[1]
-    arm.c = solution.x[2]
-    arm.d = solution.x[3]
-    arm.e = solution.x[4]
-    arm.f = solution.x[5]
+        print("arguments:")
+        print(arguments)
+        # Call the C++ program with the provided arguments
+        result = subprocess.run(['cpp/main'] + arguments, capture_output=True, text=True)
 
+        # Check if the C++ program executed successfully
+        if result.returncode != 0:
+            print("C++ program error:")
+            print(result.stderr)
+            sys.exit(result.returncode)
 
-#def solveInverseKinematics():
-#
-#    initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
-#    lower_bounds = [-np.pi/2,-np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2]
-#    upper_bounds = [np.pi/2 , np.pi/2,  np.pi/2,  np.pi/2,  np.pi/2,  np.pi/2]
-#    solution = least_squares(system_of_equations, initial_guess, bounds=(lower_bounds, upper_bounds))    
-#    arm.a = solution.x[0]
-#    arm.b = solution.x[1]
-#    arm.c = solution.x[2]
-#    arm.d = solution.x[3]
-#    arm.e = solution.x[4]
-#    arm.f = solution.x[5]
+        # Process the output to extract the solution
+        output = result.stdout.strip()
+        print("C++ program output:")
+        print(output)
+
+        # Extract the solution from the output
+        if output.startswith("Solution:"):
+            solution_str = output[len("Solution:"):].strip()
+            solution = [float(x) for x in solution_str.split()]
+            print("Extracted solution:")
+            print(solution)
+
+            arm.a = solution[0]
+            arm.b = solution[1]
+            arm.c = solution[2]
+            arm.d = solution[3]
+            arm.e = solution[4]
+            arm.f = solution[5]
+
+        else:
+            print("Unexpected output format")
+            sys.exit(1)
+
 
 
 
@@ -133,6 +158,7 @@ def updateGamma(val):
 
 def setUpPlot():
      # Create sliders
+
     ax_x        = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
     ax_y        = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
     ax_z        = plt.axes([0.1 , 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
@@ -158,26 +184,41 @@ def setUpPlot():
 
 
 
-
-
-
 def main():
     
-    #x = threading.Thread(target=solveInverseKinematics)
-    #x.start()
+    if(1):
+        setUpPlot()
 
-    #start_time = time.time()  # Record the start time
-    #solveInverseKinematics()
-    #end_time = time.time()    # Record the end time
-#
-    #elapsed_time = end_time - start_time  # Calculate the elapsed time
-    #print(f"Function call took {elapsed_time:.6f} seconds")
 
-    setUpPlot()
+    if(0):
+        if len(sys.argv) != 7:
+            print(f"Usage: {sys.argv[0]} x y z alpha beta gamma")
+            sys.exit(1)
+        
+        try:
+            arm.x = float(sys.argv[1])
+            arm.y = float(sys.argv[2])
+            arm.z = float(sys.argv[3])
+            arm.alpha = float(sys.argv[4])
+            arm.beta  = float(sys.argv[5])
+            arm.gamma = float(sys.argv[6])
+        except ValueError as e:
+            print(f"Error: {e}")
+            sys.exit(1)
+        
+        solveInverseKinematics()
 
-    
+        print("The solution is: ")
+        print(arm.a)
+        print(arm.b)
+        print(arm.c)
+        print(arm.d)
+        print(arm.e)
+        print(arm.f)
 
-    
+        #arm.draw()
+        #plt.show()
+        
 
 
 
