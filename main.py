@@ -6,7 +6,7 @@ from matplotlib.widgets import Slider, TextBox
 from arm import Arm
 import threading
 import time
-
+from scipy.optimize import root
 
 
 def createPlot():
@@ -95,17 +95,35 @@ def setUpPlot():
 
 
 
+def system_of_equations(vars):
+    a, b, c, d, e ,f = vars
+    return  getEndEffectorCoordinates(a,b,c,d,e,f) - [arm.x, arm.y, arm.z, arm.alpha, arm.beta, arm.gamma]
+
+
+
 
 
 def solveInverseKinematics():
-    for i in range(1,10000):
-        arm.getEndEffectorCoordinates(1,-1,3,3,2,-2)
+    
+
+    initial_guess = [-10.0, 222.2 , 175.33, np.pi/2, 0, 0]
+    solution = root(system_of_equations, initial_guess, method='hybr')
+    print(solution)
 
 
 def main():
     
     #x = threading.Thread(target=solveInverseKinematics)
     #x.start()
+
+    #The desired location is set in the arm class directly.
+    arm.x = -10.0
+    arm.y = 222.2 
+    arm.z = 175.33
+    arm.alpha = np.pi/2
+    arm.beta = 0
+    arm.gamma = 0
+
 
     start_time = time.time()  # Record the start time
     solveInverseKinematics()

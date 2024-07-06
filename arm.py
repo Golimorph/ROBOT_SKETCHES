@@ -29,6 +29,14 @@ class Arm:
 		self.e = 0
 		self.f = 0
 
+		#desired position 
+		#self.x
+		#self.x
+		#self.x
+		#self.alpha
+		#self.beta
+		#self.gamma
+
 		self.ax = ax
 
 		
