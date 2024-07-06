@@ -98,8 +98,8 @@ def setUpPlot():
 
 
 def solveInverseKinematics():
-    for i in range(1,3000):
-        arm.getEndEffectorCoordinates(0,0,0,0,0,0)
+    for i in range(1,10000):
+        arm.getEndEffectorCoordinates(1,-1,3,3,2,-2)
 
 
 def main():
