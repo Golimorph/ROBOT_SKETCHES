@@ -33,7 +33,7 @@ class Arm:
 		self.x = -10.0
 		self.y = 222.2 
 		self.z = 175.33
-		self.alpha = np.pi/2
+		self.alpha = np.pi/2-0.2
 		self.beta = 0
 		self.gamma = 0
 

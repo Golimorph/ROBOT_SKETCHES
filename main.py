@@ -7,6 +7,7 @@ from arm import Arm
 import threading
 import time
 from scipy.optimize import least_squares
+from scipy.optimize import root
 
 def createPlot():
     fig = plt.figure()
@@ -21,37 +22,19 @@ def createPlot():
 
     return ax
 
-
-def update(val):
-        print("update called")
-        print(val)
-        #new_theta = s_theta.val
-        #new_a = s_a.val
-        #new_b = s_b.val
-        #ax.clear()
-        #drawArm(theta,a,b,psi,omega,gamma)
-
 ax = createPlot()
 arm = Arm(ax)
 arm.draw()
 
 def system_of_equations(vars):
     a, b, c, d, e ,f = vars
-
-    currentX        = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[0]
-    currentY        = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[1]
-    currentZ        = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[2]
-    currentAlpha    = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[3]
-    currentBeta     = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[4]
-    currentGamma    = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[5]
-
-    return  [currentX- arm.x, currentY - arm.y, currentZ - arm.z, currentAlpha - arm.alpha, currentBeta - arm.beta, currentGamma - arm.gamma]
+    X = arm.getEndEffectorCoordinates(a,b,c,d,e,f)
+    return  [X[0]- arm.x, X[1] - arm.y, X[2]- arm.z, X[3] - arm.alpha, X[4] - arm.beta, X[5] - arm.gamma]
 
 def solveInverseKinematics():
     
-    initial_guess = [arm.x, arm.y , arm.z, arm.alpha, arm.beta, arm.gamma]
+    initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
     solution = root(system_of_equations, initial_guess, method='hybr')
-    print(solution.x)
 
     arm.a = solution.x[0]
     arm.b = solution.x[1]
@@ -61,7 +44,22 @@ def solveInverseKinematics():
     arm.f = solution.x[5]
 
 
-    
+#def solveInverseKinematics():
+#
+#    initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
+#    lower_bounds = [-np.pi/2,-np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2, -np.pi/2]
+#    upper_bounds = [np.pi/2 , np.pi/2,  np.pi/2,  np.pi/2,  np.pi/2,  np.pi/2]
+#    solution = least_squares(system_of_equations, initial_guess, bounds=(lower_bounds, upper_bounds))    
+#    arm.a = solution.x[0]
+#    arm.b = solution.x[1]
+#    arm.c = solution.x[2]
+#    arm.d = solution.x[3]
+#    arm.e = solution.x[4]
+#    arm.f = solution.x[5]
+
+
+
+
 
 
 def updateA(val):
