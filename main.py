@@ -6,8 +6,7 @@ from matplotlib.widgets import Slider, TextBox
 from arm import Arm
 import threading
 import time
-from scipy.optimize import root
-
+from scipy.optimize import least_squares
 
 def createPlot():
     fig = plt.figure()
@@ -36,79 +35,132 @@ ax = createPlot()
 arm = Arm(ax)
 arm.draw()
 
+def system_of_equations(vars):
+    a, b, c, d, e ,f = vars
+
+    currentX        = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[0]
+    currentY        = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[1]
+    currentZ        = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[2]
+    currentAlpha    = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[3]
+    currentBeta     = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[4]
+    currentGamma    = arm.getEndEffectorCoordinates(a,b,c,d,e,f)[5]
+
+    return  [currentX- arm.x, currentY - arm.y, currentZ - arm.z, currentAlpha - arm.alpha, currentBeta - arm.beta, currentGamma - arm.gamma]
+
+def solveInverseKinematics():
+    
+    initial_guess = [arm.x, arm.y , arm.z, arm.alpha, arm.beta, arm.gamma]
+    solution = root(system_of_equations, initial_guess, method='hybr')
+    print(solution.x)
+
+    arm.a = solution.x[0]
+    arm.b = solution.x[1]
+    arm.c = solution.x[2]
+    arm.d = solution.x[3]
+    arm.e = solution.x[4]
+    arm.f = solution.x[5]
+
+
+    
+
 
 def updateA(val):
-        arm.a = val*np.pi/180
-        arm.clear()
-        arm.draw()
+    arm.a = val*np.pi/180
+    arm.clear()
+    arm.draw()
 
 def updateB(val):
-        arm.b = val*np.pi/180
-        arm.clear()
-        arm.draw()
+    arm.b = val*np.pi/180
+    arm.clear()
+    arm.draw()
 
 def updateC(val):
-        arm.c = val*np.pi/180
-        arm.clear()
-        arm.draw()
+    arm.c = val*np.pi/180
+    arm.clear()
+    arm.draw()
 
 def updateD(val):
-        arm.d = val*np.pi/180
-        arm.clear()
-        arm.draw()
+    arm.d = val*np.pi/180
+    arm.clear()
+    arm.draw()
 
 def updateE(val):
-        arm.e = val*np.pi/180
-        arm.clear()
-        arm.draw()
+    arm.e = val*np.pi/180
+    arm.clear()
+    arm.draw()
 
 def updateF(val):
-        arm.f = val*np.pi/180
-        arm.clear()
-        arm.draw()
+    arm.f = val*np.pi/180
+    arm.clear()
+    arm.draw()
+
+def updateX(val):
+    arm.x = val
+    solveInverseKinematics()
+    arm.clear()
+    arm.draw()
+
+def updateY(val):
+    arm.y = val
+    solveInverseKinematics()
+    arm.clear()
+    arm.draw()
+
+def updateZ(val):
+    arm.z = val
+    solveInverseKinematics()
+    arm.clear()
+    arm.draw()
+
+def updateAlpha(val):
+    arm.alpha = val*np.pi/180
+    solveInverseKinematics()
+    arm.clear()
+    arm.draw()
+
+def updateBeta(val):
+    arm.beta = val*np.pi/180
+    solveInverseKinematics()
+    arm.clear()
+    arm.draw()
+
+def updateGamma(val):
+    arm.gamma = val*np.pi/180
+    solveInverseKinematics()
+    arm.clear()
+    arm.draw()     
+
+
+
 
 def setUpPlot():
      # Create sliders
-    ax_a = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_b = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_c = plt.axes([0.1 , 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_d = plt.axes([0.55, 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_e = plt.axes([0.1 , 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
-    ax_f = plt.axes([0.55, 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_x        = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_y        = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_z        = plt.axes([0.1 , 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_alpha    = plt.axes([0.55, 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_beta     = plt.axes([0.1 , 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+    ax_gamma    = plt.axes([0.55, 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
 
-    s_a = Slider(ax_a, 'a', -180, 180, valinit=0)
-    s_b = Slider(ax_b, 'b', -180, 180, valinit=-60)
-    s_c = Slider(ax_c, 'c', -180, 180, valinit=60)
-    s_d = Slider(ax_d, 'd', -180, 180, valinit=0)
-    s_e = Slider(ax_e, 'e', -180, 180, valinit=0)
-    s_f = Slider(ax_f, 'f', -180, 180, valinit=0)
+    s_x     = Slider(ax_x       , 'x'       , -200, 200, valinit=0)
+    s_y     = Slider(ax_y       , 'y'       , -200, 400, valinit=190)
+    s_z     = Slider(ax_z       , 'z'       , -200, 400, valinit=150)
+    s_alpha = Slider(ax_alpha   , 'alpha'   , -180, 180, valinit=90)
+    s_beta  = Slider(ax_beta    , 'beta'    , -180, 180, valinit=0)
+    s_gamma = Slider(ax_gamma   , 'gamma'   , -180, 180, valinit=0)
 
-    s_a.on_changed(updateA)
-    s_b.on_changed(updateB)
-    s_c.on_changed(updateC)
-    s_d.on_changed(updateD)
-    s_e.on_changed(updateE)
-    s_f.on_changed(updateF)
+    s_x.on_changed(updateX)
+    s_y.on_changed(updateY)
+    s_z.on_changed(updateZ)
+    s_alpha.on_changed(updateAlpha)
+    s_beta.on_changed(updateBeta)
+    s_gamma.on_changed(updateGamma)
  
     plt.show()
 
 
 
 
-def system_of_equations(vars):
-    a, b, c, d, e ,f = vars
-    return  getEndEffectorCoordinates(a,b,c,d,e,f) - [arm.x, arm.y, arm.z, arm.alpha, arm.beta, arm.gamma]
-
-
-
-
-
-def solveInverseKinematics():
-    
-
-    initial_guess = [-10.0, 222.2 , 175.33, np.pi/2, 0, 0]
-    solution = root(system_of_equations, initial_guess, method='hybr')
-    print(solution)
 
 
 def main():
@@ -116,28 +168,14 @@ def main():
     #x = threading.Thread(target=solveInverseKinematics)
     #x.start()
 
-    #The desired location is set in the arm class directly.
-    arm.x = -10.0
-    arm.y = 222.2 
-    arm.z = 175.33
-    arm.alpha = np.pi/2
-    arm.beta = 0
-    arm.gamma = 0
+    #start_time = time.time()  # Record the start time
+    #solveInverseKinematics()
+    #end_time = time.time()    # Record the end time
+#
+    #elapsed_time = end_time - start_time  # Calculate the elapsed time
+    #print(f"Function call took {elapsed_time:.6f} seconds")
 
-
-    start_time = time.time()  # Record the start time
-    solveInverseKinematics()
-    end_time = time.time()    # Record the end time
-
-    elapsed_time = end_time - start_time  # Calculate the elapsed time
-    print(f"Function call took {elapsed_time:.6f} seconds")
-
-
-
-
-    
-
-    #setUpPlot()
+    setUpPlot()
 
     
 
@@ -155,6 +193,58 @@ if __name__ == "__main__":
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#def setUpPlot():
+#     # Create sliders
+#    ax_a = plt.axes([0.1 , 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+#    ax_b = plt.axes([0.55, 0.01, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+#    ax_c = plt.axes([0.1 , 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+#    ax_d = plt.axes([0.55, 0.05, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+#    ax_e = plt.axes([0.1 , 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+#    ax_f = plt.axes([0.55, 0.09, 0.35, 0.03], facecolor='lightgoldenrodyellow')
+#
+#    s_a = Slider(ax_a, 'a', -180, 180, valinit=0)
+#    s_b = Slider(ax_b, 'b', -180, 180, valinit=-60)
+#    s_c = Slider(ax_c, 'c', -180, 180, valinit=60)
+#    s_d = Slider(ax_d, 'd', -180, 180, valinit=0)
+#    s_e = Slider(ax_e, 'e', -180, 180, valinit=0)
+#    s_f = Slider(ax_f, 'f', -180, 180, valinit=0)
+#
+#    s_a.on_changed(updateA)
+#    s_b.on_changed(updateB)
+#    s_c.on_changed(updateC)
+#    s_d.on_changed(updateD)
+#    s_e.on_changed(updateE)
+#    s_f.on_changed(updateF)
+# 
+#    plt.show()
 
 
 
