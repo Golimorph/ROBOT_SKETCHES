@@ -6,19 +6,43 @@
 InverseKinematics::InverseKinematics() 
 {
     static const double arrDesiredValue[] = {-10.0, 222.2 , 175.33, M_PI/2-0.1, 0, 0};
-    desiredValue = std::vector<double>(arrDesiredValue, arrDesiredValue + sizeof(arrDesiredValue) / sizeof(arrDesiredValue[0]));
+    m_desiredValue = std::vector<double>(arrDesiredValue, arrDesiredValue + sizeof(arrDesiredValue) / sizeof(arrDesiredValue[0]));
 
 
     //static const double arrLastSolution[] = {0.4505, -0.640, 0.1662, 0.0207, -0.923, -0.904};
     static const double arrLastSolution[] = {0, 0, 0, 0, 0, 0};
-    lastSolution = std::vector<double>(arrLastSolution, arrLastSolution + sizeof(arrLastSolution) / sizeof(arrLastSolution[0]));
+    m_lastSolution = std::vector<double>(arrLastSolution, arrLastSolution + sizeof(arrLastSolution) / sizeof(arrLastSolution[0]));
 
 }
 
-std::vector<double> InverseKinematics::solve(const std::vector<double>& desiredValue) 
+bool InverseKinematics::solve(const std::vector<double>& desiredValue, std::vector<double>& solution) 
 {
-    this->desiredValue = desiredValue;
-    std::vector<double> vars = lastSolution;
+    m_desiredValue = desiredValue;
+
+    //At first, try with the last solution as guess.
+    if(solveForGuess(solution, m_lastSolution))
+    {
+        m_lastSolution = solution;
+        return true;
+    }
+
+    //If last solution was a bad guess, then try with the known solutions as guess.
+    //for(listOfKnownSolutions)
+    //{
+    //    if(solveForGuess(solution, knownSolution))
+    //    {
+    //        m_lastSolution = solution;
+    //        return true;
+    //    }
+    //}
+
+    return false;
+}
+
+
+bool InverseKinematics::solveForGuess(std::vector<double>& solution, std::vector<double> guess) 
+{
+    std::vector<double> vars = guess;
     std::vector<double> f(6);
     std::vector<std::vector<double> > J(6, std::vector<double>(6));
 
@@ -39,19 +63,11 @@ std::vector<double> InverseKinematics::solve(const std::vector<double>& desiredV
         }
 
         if (std::sqrt(norm) < epsilon) {
-            //std::cerr << "Found a solution!\n";
-            //std::cerr << iter << "\n";
-            lastSolution = vars; //save this solution as guess for the next time.
-            return vars;
+            solution = vars;
+            return true;
         }
     }
-
-    //std::cerr << "Newton-Raphson method did not converge\n";
-
-    //static const double arr[] = {0, 0, 0, 0, 0, 0};
-    //return std::vector<double>(arr, arr + sizeof(arr) / sizeof(arr[0]) );
-    std::cerr << "Failed to find a solution!\n";
-    return vars;
+    return false;
 }
 
 void InverseKinematics::compute_jacobian(const std::vector<double>& vars, std::vector<std::vector<double> >& J) 
@@ -184,12 +200,12 @@ void InverseKinematics::compute_functions(const std::vector<double>& vars, std::
     double beta = std::asin(-(vF2z*vF1x-vF2x*vF1z));
     double gamma = std::atan2(vF2z,vF1z);
 
-    funcs[0] = x - desiredValue[0];
-    funcs[1] = y - desiredValue[1];
-    funcs[2] = z - desiredValue[2];
-    funcs[3] = alpha - desiredValue[3];
-    funcs[4] = beta - desiredValue[4];
-    funcs[5] = gamma - desiredValue[5];
+    funcs[0] = x - m_desiredValue[0];
+    funcs[1] = y - m_desiredValue[1];
+    funcs[2] = z - m_desiredValue[2];
+    funcs[3] = alpha - m_desiredValue[3];
+    funcs[4] = beta - m_desiredValue[4];
+    funcs[5] = gamma - m_desiredValue[5];
 }
 
 

@@ -22,25 +22,23 @@ class InverseKinematics
 {
 public:
     InverseKinematics();
-    std::vector<double> solve(const std::vector<double>& desiredValue);
+    bool solve(const std::vector<double>& desiredValue, std::vector<double>& solution);
 
 private:
 
-    std::vector<double> function(const std::vector<double>& vars);
-    std::vector<std::vector<double> > jacobian(const std::vector<double>& vars);
-    void compute_functions(const std::vector<double>& vars, std::vector<double>& funcs);
+	void compute_functions(const std::vector<double>& vars, std::vector<double>& funcs);
     void compute_jacobian(const std::vector<double>& vars, std::vector<std::vector<double> >& J);
     std::vector<double> solve_system(const std::vector<std::vector<double> >& J, const std::vector<double>& funcs);
 
+    bool solveForGuess(std::vector<double>& solution, std::vector<double> guess);
 
-
-    std::vector<double> desiredValue;
-    std::vector<double> lastSolution;
+    std::vector<double> m_desiredValue;
+    std::vector<double> m_lastSolution;
 
 
     //tabulate som known solutions that can be used as initial guesses: 
 
-    
+
 
 };
 

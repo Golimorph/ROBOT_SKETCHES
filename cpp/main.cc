@@ -56,9 +56,13 @@ void process_command(int client_socket, InverseKinematics ik)
     if (valread > 0) {
         //std::cout << "Received command: " << buffer << std::endl;
 
-        std::vector<double> desiredValue =  parseBufferToDoubles(buffer);
+        const std::vector<double> desiredValue =  parseBufferToDoubles(buffer);
 
-        std::vector<double> solution = ik.solve(desiredValue);
+        std::vector<double> solution;
+        if(!ik.solve(desiredValue, solution))
+        {
+            std::cerr << "ERROR: failed to find a solution!\n";
+        }
 
         //solution.push_back(1000);//number of iterations
         write(client_socket, solution.data(), solution.size() * sizeof(double));
