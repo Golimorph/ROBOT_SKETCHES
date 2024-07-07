@@ -19,8 +19,10 @@ bool InverseKinematics::solve(const std::vector<double>& desiredValue, std::vect
 {
     m_desiredValue = desiredValue;
 
+    std::vector<double> lastSol = m_lastSolution;
+
     //At first, try with the last solution as guess.
-    if(solveForGuess(solution, m_lastSolution))
+    if(solveForGuess(solution, lastSol))
     {
         m_lastSolution = solution;
         return true;
@@ -36,12 +38,14 @@ bool InverseKinematics::solve(const std::vector<double>& desiredValue, std::vect
     //    }
     //}
 
+    solution = m_lastSolution; //provide the last solution if unable to find a solution.
     return false;
 }
 
 
-bool InverseKinematics::solveForGuess(std::vector<double>& solution, std::vector<double> guess) 
+bool InverseKinematics::solveForGuess(std::vector<double>& solution, const std::vector<double> guess) 
 {
+    //std::cerr << "guess[0] is: " << guess[0] << "\n"; 
     std::vector<double> vars = guess;
     std::vector<double> f(6);
     std::vector<std::vector<double> > J(6, std::vector<double>(6));
@@ -64,6 +68,7 @@ bool InverseKinematics::solveForGuess(std::vector<double>& solution, std::vector
 
         if (std::sqrt(norm) < epsilon) {
             solution = vars;
+            std::cerr << iter << "\n";
             return true;
         }
     }

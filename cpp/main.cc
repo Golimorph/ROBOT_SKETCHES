@@ -49,7 +49,7 @@ std::vector<double> parseBufferToDoubles(const char* buffer) {
     return values;
 }
 
-void process_command(int client_socket, InverseKinematics ik) 
+void process_command(int client_socket, InverseKinematics &ik) 
 {
     char buffer[1024] = {0};
     int valread = read(client_socket, buffer, 1024);
@@ -64,7 +64,7 @@ void process_command(int client_socket, InverseKinematics ik)
             std::cerr << "ERROR: failed to find a solution!\n";
         }
 
-        //solution.push_back(1000);//number of iterations
+
         write(client_socket, solution.data(), solution.size() * sizeof(double));
     }
 }

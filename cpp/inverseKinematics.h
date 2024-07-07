@@ -30,7 +30,7 @@ private:
     void compute_jacobian(const std::vector<double>& vars, std::vector<std::vector<double> >& J);
     std::vector<double> solve_system(const std::vector<std::vector<double> >& J, const std::vector<double>& funcs);
 
-    bool solveForGuess(std::vector<double>& solution, std::vector<double> guess);
+    bool solveForGuess(std::vector<double>& solution, const std::vector<double> guess);
 
     std::vector<double> m_desiredValue;
     std::vector<double> m_lastSolution;

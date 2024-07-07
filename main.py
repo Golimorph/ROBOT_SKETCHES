@@ -61,8 +61,8 @@ def solveInverseKinematics():
         try:
             command = str(arm.x)+","+str(arm.y)+","+str(arm.z)+","+str(arm.alpha)+","+str(arm.beta)+","+str(arm.gamma)
             solution = send_command(command)
-            print("For desire: " + command)
-            print("Received solution:", solution)
+            #print("For desire: " + command)
+            #print("Received solution:", solution)
             arm.a = solution[0]
             arm.b = solution[1]
             arm.c = solution[2]
