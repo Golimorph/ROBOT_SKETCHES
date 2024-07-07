@@ -40,6 +40,8 @@ std::vector<double> InverseKinematics::solve(const std::vector<double>& desiredV
 
         if (std::sqrt(norm) < epsilon) {
             //std::cerr << "Found a solution!\n";
+            //std::cerr << iter << "\n";
+            lastSolution = vars; //save this solution as guess for the next time.
             return vars;
         }
     }
@@ -48,6 +50,7 @@ std::vector<double> InverseKinematics::solve(const std::vector<double>& desiredV
 
     //static const double arr[] = {0, 0, 0, 0, 0, 0};
     //return std::vector<double>(arr, arr + sizeof(arr) / sizeof(arr[0]) );
+    std::cerr << "Failed to find a solution!\n";
     return vars;
 }
 

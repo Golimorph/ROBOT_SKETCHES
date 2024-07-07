@@ -10,6 +10,20 @@ from scipy.optimize import least_squares
 from scipy.optimize import root
 import sys
 import subprocess
+import socket
+import sys
+import struct
+
+host = 'localhost'
+port = 8080
+socketToCppProgram = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+socketToCppProgram.connect((host, port))
+
+def send_command(command):
+    
+    socketToCppProgram.sendall(command.encode())
+    data = socketToCppProgram.recv(1024)
+    return list(struct.unpack('d' * (len(data) // 8), data))
 
 def createPlot():
     fig = plt.figure()
@@ -34,7 +48,6 @@ def system_of_equations(vars):
     return  [X[0]- arm.x, X[1] - arm.y, X[2]- arm.z, X[3] - arm.alpha, X[4] - arm.beta, X[5] - arm.gamma]
 
 def solveInverseKinematics():
-    
     if(0):
         initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
         solution = root(system_of_equations, initial_guess, method='hybr')
@@ -45,41 +58,58 @@ def solveInverseKinematics():
         arm.e = solution.x[4]
         arm.f = solution.x[5]
     if(1):
-        arguments = [str(arm.x), str(arm.y), str(arm.z), str(arm.alpha), str(arm.beta), str(arm.gamma)]
-
-        print("arguments:")
-        print(arguments)
-        # Call the C++ program with the provided arguments
-        result = subprocess.run(['cpp/main'] + arguments, capture_output=True, text=True)
-
-        # Check if the C++ program executed successfully
-        if result.returncode != 0:
-            print("C++ program error:")
-            print(result.stderr)
-            sys.exit(result.returncode)
-
-        # Process the output to extract the solution
-        output = result.stdout.strip()
-        print("C++ program output:")
-        print(output)
-
-        # Extract the solution from the output
-        if output.startswith("Solution:"):
-            solution_str = output[len("Solution:"):].strip()
-            solution = [float(x) for x in solution_str.split()]
-            print("Extracted solution:")
-            print(solution)
-
+        try:
+            command = str(arm.x)+","+str(arm.y)+","+str(arm.z)+","+str(arm.alpha)+","+str(arm.beta)+","+str(arm.gamma)
+            solution = send_command(command)
+            print("For desire: " + command)
+            print("Received solution:", solution)
             arm.a = solution[0]
             arm.b = solution[1]
             arm.c = solution[2]
             arm.d = solution[3]
             arm.e = solution[4]
             arm.f = solution[5]
-
-        else:
-            print("Unexpected output format")
+        except ConnectionRefusedError:
+            print("Error: Could not connect to the C++ server. Make sure it is running.")
             sys.exit(1)
+
+
+
+        #arguments = [str(arm.x), str(arm.y), str(arm.z), str(arm.alpha), str(arm.beta), str(arm.gamma)]
+#
+        #print("arguments:")
+        #print(arguments)
+        ## Call the C++ program with the provided arguments
+        #result = subprocess.run(['cpp/main'] + arguments, capture_output=True, text=True)
+#
+        ## Check if the C++ program executed successfully
+        #if result.returncode != 0:
+        #    print("C++ program error:")
+        #    print(result.stderr)
+        #    sys.exit(result.returncode)
+#
+        ## Process the output to extract the solution
+        #output = result.stdout.strip()
+        #print("C++ program output:")
+        #print(output)
+#
+        ## Extract the solution from the output
+        #if output.startswith("Solution:"):
+        #    solution_str = output[len("Solution:"):].strip()
+        #    solution = [float(x) for x in solution_str.split()]
+        #    print("Extracted solution:")
+        #    print(solution)
+#
+        #    arm.a = solution[0]
+        #    arm.b = solution[1]
+        #    arm.c = solution[2]
+        #    arm.d = solution[3]
+        #    arm.e = solution[4]
+        #    arm.f = solution[5]
+#
+        #else:
+        #    print("Unexpected output format")
+        #    sys.exit(1)
 
 
 

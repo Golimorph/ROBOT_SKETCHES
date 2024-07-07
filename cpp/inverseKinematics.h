@@ -15,7 +15,7 @@
 #define F1  10 //need to measure
 #define F2  10 //need to measure
 
-#define epsilon 1e-6
+#define epsilon 1e-4
 #define max_iterations 1000
 
 class InverseKinematics 
@@ -32,8 +32,13 @@ private:
     void compute_jacobian(const std::vector<double>& vars, std::vector<std::vector<double> >& J);
     std::vector<double> solve_system(const std::vector<std::vector<double> >& J, const std::vector<double>& funcs);
 
+
+
     std::vector<double> desiredValue;
     std::vector<double> lastSolution;
+
+
+    //tabulate som known solutions that can be used as initial guesses: 
 
     
 
