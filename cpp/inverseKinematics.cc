@@ -8,12 +8,20 @@ InverseKinematics::InverseKinematics()
     static const double arrDesiredValue[] = {-10.0, 222.2 , 175.33, M_PI/2-0.1, 0, 0};
     m_desiredValue = std::vector<double>(arrDesiredValue, arrDesiredValue + sizeof(arrDesiredValue) / sizeof(arrDesiredValue[0]));
 
-
-    //static const double arrLastSolution[] = {0.4505, -0.640, 0.1662, 0.0207, -0.923, -0.904};
     static const double arrLastSolution[] = {0, 0, 0, 0, 0, 0};
     m_lastSolution = std::vector<double>(arrLastSolution, arrLastSolution + sizeof(arrLastSolution) / sizeof(arrLastSolution[0]));
 
+    static const double arrLimits[] = {
+        -70*M_PI/180,  70*M_PI/180,
+        -70*M_PI/180, 130*M_PI/180,
+        -30*M_PI/180,  90*M_PI/180,
+        -M_PI/2     ,     M_PI/2,
+        -M_PI/2     ,     M_PI/2,
+        -M_PI/2     ,     M_PI/2
+    };
+    m_limits = std::vector<double>(arrLimits, arrLimits + sizeof(arrLimits) / sizeof(arrLimits[0]));
 }
+
 
 bool InverseKinematics::solve(const std::vector<double>& desiredValue, std::vector<double>& solution) 
 {
@@ -25,6 +33,10 @@ bool InverseKinematics::solve(const std::vector<double>& desiredValue, std::vect
     if(solveForGuess(solution, lastSol))
     {
         m_lastSolution = solution;
+        for(int i = 0; i < solution.size(); ++i)
+        {
+            solution.at(i) *= 180/M_PI;
+        }
         return true;
     }
 
@@ -38,10 +50,35 @@ bool InverseKinematics::solve(const std::vector<double>& desiredValue, std::vect
     //    }
     //}
 
-    solution = m_lastSolution; //provide the last solution if unable to find a solution.
+    solution = m_lastSolution; //provide the last solution as answer to the caller if unable to find a solution.
+
     return false;
 }
 
+
+//help method for newtonRaphsonSolver, puts all angles between -M_PI and M_PI
+void InverseKinematics::normalize(std::vector<double> &solution) 
+{
+    for(int i = 0; i < solution.size(); ++i)
+    {
+        while (solution.at(i) > M_PI)  solution.at(i) -= 2 * M_PI;
+        while (solution.at(i) < -M_PI) solution.at(i) += 2 * M_PI;
+    }
+}
+
+
+bool InverseKinematics::isValid(const std::vector<double>& solution)
+{
+    for(int i = 0; i < solution.size(); ++i)
+    {
+        if(m_limits.at(2*i) > solution.at(i) || m_limits.at(2*i+1) < solution.at(i))
+        {
+            //std::cerr << "invalid solutution\n";
+            return false;
+        }
+    }
+    return true;
+}
 
 bool InverseKinematics::solveForGuess(std::vector<double>& solution, const std::vector<double> guess) 
 {
@@ -50,13 +87,15 @@ bool InverseKinematics::solveForGuess(std::vector<double>& solution, const std::
     std::vector<double> f(6);
     std::vector<std::vector<double> > J(6, std::vector<double>(6));
 
-    for (int iter = 0; iter < max_iterations; ++iter) {
+    for (int iter = 0; iter < max_iterations; ++iter) 
+    {
         compute_functions(vars, f);
         compute_jacobian(vars, J);
 
         std::vector<double> delta = solve_system(J, f);
 
-        for (size_t i = 0; i < vars.size(); ++i) {
+        for (size_t i = 0; i < vars.size(); ++i) 
+        {
             vars[i] -= delta[i];
         }
 
@@ -66,9 +105,15 @@ bool InverseKinematics::solveForGuess(std::vector<double>& solution, const std::
             norm += f.at(i) * f.at(i);
         }
 
-        if (std::sqrt(norm) < epsilon) {
+        if (std::sqrt(norm) < epsilon) 
+        {
+            normalize(vars);
+            if(!isValid(vars))
+            {
+                return false;
+            }
             solution = vars;
-            std::cerr << iter << "\n";
+            //std::cerr << iter << "\n";
             return true;
         }
     }

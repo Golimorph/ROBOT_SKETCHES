@@ -61,14 +61,14 @@ def solveInverseKinematics():
         try:
             command = str(arm.x)+","+str(arm.y)+","+str(arm.z)+","+str(arm.alpha)+","+str(arm.beta)+","+str(arm.gamma)
             solution = send_command(command)
-            #print("For desire: " + command)
-            #print("Received solution:", solution)
-            arm.a = solution[0]
-            arm.b = solution[1]
-            arm.c = solution[2]
-            arm.d = solution[3]
-            arm.e = solution[4]
-            arm.f = solution[5]
+            print("For desire: " + command)
+            print("Received solution:", solution)
+            arm.a = solution[0]*np.pi/180
+            arm.b = solution[1]*np.pi/180
+            arm.c = solution[2]*np.pi/180
+            arm.d = solution[3]*np.pi/180
+            arm.e = solution[4]*np.pi/180
+            arm.f = solution[5]*np.pi/180
         except ConnectionRefusedError:
             print("Error: Could not connect to the C++ server. Make sure it is running.")
             sys.exit(1)
