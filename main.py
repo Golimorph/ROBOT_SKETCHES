@@ -14,10 +14,10 @@ import socket
 import sys
 import struct
 
-host = 'localhost'
-port = 8080
-socketToCppProgram = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-socketToCppProgram.connect((host, port))
+#host = 'localhost'
+#port = 8080
+#socketToCppProgram = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#socketToCppProgram.connect((host, port))
 
 def send_command(command):
     
@@ -48,7 +48,7 @@ def system_of_equations(vars):
     return  [X[0]- arm.x, X[1] - arm.y, X[2]- arm.z, X[3] - arm.alpha, X[4] - arm.beta, X[5] - arm.gamma]
 
 def solveInverseKinematics():
-    if(0):
+    if(1):
         initial_guess = [arm.a, arm.b , arm.c, arm.d, arm.e, arm.f]
         solution = root(system_of_equations, initial_guess, method='hybr')
         arm.a = solution.x[0]
@@ -57,7 +57,7 @@ def solveInverseKinematics():
         arm.d = solution.x[3]
         arm.e = solution.x[4]
         arm.f = solution.x[5]
-    if(1):
+    if(0):
         try:
             command = str(arm.x)+","+str(arm.y)+","+str(arm.z)+","+str(arm.alpha)+","+str(arm.beta)+","+str(arm.gamma)
             solution = send_command(command)

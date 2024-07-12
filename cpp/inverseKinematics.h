@@ -8,12 +8,12 @@
 #define B  129.9 //OK
 #define C1  17.6 //OK
 #define C2  122.45 //OK 
-#define D1  20 //need to measure
-#define D2  20 //need to measure
-#define E1  20 //need to measure
-#define E2  10 //need to measure
-#define F1  10 //need to measure
-#define F2  10 //need to measure
+#define D1  6.41 //need to measure
+#define D2  43.57 //need to measure
+#define E1  39.51 //need to measure
+#define E2  8.28 //need to measure
+#define F1  19.2 //need to measure
+#define F2  71.53 //need to measure
 
 #define epsilon 1e-4
 #define max_iterations 1000

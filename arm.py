@@ -14,12 +14,12 @@ class Arm:
 		self.B = 129.9
 		self.C1 = 17.6
 		self.C2 = 122.45
-		self.D1 = 20 #need to measure
-		self.D2 = 20 #need to measure
-		self.E1 = 20 #need to measure
-		self.E2 = 10 #need to measure
-		self.F1 = 10 #need to measure
-		self.F2 = 10 #need to measure
+		self.D1 = 6.41
+		self.D2 = 43.57
+		self.E1 = 39.51
+		self.E2 = 8.28
+		self.F1 = 19.2
+		self.F2 = 71.53
 
 		#angles in radians
 		self.a = 0
