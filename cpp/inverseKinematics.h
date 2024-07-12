@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#define A1  40.86
-#define A2  44.83
-#define B  123.0
-#define C1  17.5
-#define C2  131.34
+#define A1  41.85 //OK
+#define A2  44.79 //OK
+#define B  129.9 //OK
+#define C1  17.6 //OK
+#define C2  122.45 //OK 
 #define D1  20 //need to measure
 #define D2  20 //need to measure
 #define E1  20 //need to measure

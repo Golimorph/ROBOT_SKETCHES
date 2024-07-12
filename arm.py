@@ -9,11 +9,11 @@ class Arm:
 	def __init__(self, ax):
 		
 		#length of each link in mm. Same letter as the angle up until the next joint.
-		self.A1 = 40.86
-		self.A2 = 44.83
-		self.B = 123.0
-		self.C1 = 17.5
-		self.C2 = 131.34
+		self.A1 = 41.85
+		self.A2 = 44.79
+		self.B = 129.9
+		self.C1 = 17.6
+		self.C2 = 122.45
 		self.D1 = 20 #need to measure
 		self.D2 = 20 #need to measure
 		self.E1 = 20 #need to measure
